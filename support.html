@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="he">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+  <title>תמיכה · Dibur</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="index.html">Dibur · דיבור</a>
+    <div class="controls">
+      <a class="navlink" href="privacy.html"><span data-t="he">מדיניות פרטיות</span><span data-t="en" hidden>Privacy Policy</span></a>
+      <a class="navlink" href="terms.html"><span data-t="he">תנאי שימוש</span><span data-t="en" hidden>Terms of Service</span></a>
+      <button id="lang" class="toggle" type="button">English</button>
+    </div>
+  </header>
+  <main>
+    <article class="doc" data-lang="he" dir="rtl" lang="he">
+      <h1>תמיכה</h1>
+      <p class="updated">עודכן לאחרונה: 2026-05-13</p>
+      <p class="intro">דיבור היא אפליקציה לתרגול דיבור בעברית לילדים, בשימוש הורי ובליווי קלינאי/ת תקשורת.</p>
+      <section>
+        <h2>צריכים עזרה?</h2>
+        <p>שלחו לנו מייל ונחזור אליכם: <a href="mailto:dor362@gmail.com">dor362@gmail.com</a></p>
+      </section>
+      <section>
+        <h2>איך מתחברים?</h2>
+        <p>ההורה נרשם עם אימייל וסיסמה (או דרך Google / Apple). קלינאי/ת התקשורת שולח/ת קישור הזמנה להורה, ובו ההורה בוחר/ת סיסמה ומאשר/ת את ההסכמות.</p>
+      </section>
+      <section>
+        <h2>איך מוחקים את החשבון?</h2>
+        <p>בתוך האפליקציה: מסך הדמות → "⚙ אזור הורים" → פתרון תרגיל (שער הורים) → "מחיקת חשבון". הפעולה מוחקת לצמיתות את החשבון, הפרופילים וכל הנתונים, כולל הקלטות.</p>
+      </section>
+      <section>
+        <h2>איך מבטלים הסכמה להקלטה?</h2>
+        <p>באותו "אזור הורים" → "ביטול הסכמה להקלטה". אפשר לחדש בכל עת.</p>
+      </section>
+      <section>
+        <h2>שכחתי סיסמה</h2>
+        <p>במסך הכניסה לוחצים "שכחתם סיסמה?" ומקבלים קישור לאיפוס במייל.</p>
+      </section>
+      <section>
+        <h2>פרטיות</h2>
+        <p>מדיניות הפרטיות: <a href="https://dorhason.github.io/dibur-legal/privacy.html">https://dorhason.github.io/dibur-legal/privacy.html</a></p>
+      </section>
+    </article>
+    <article class="doc" data-lang="en" dir="ltr" lang="en">
+      <h1>Support</h1>
+      <p class="updated">Last updated: 2026-05-13</p>
+      <p class="intro">Dibur is a Hebrew speech-practice app for children, used by parents alongside a speech-language clinician.</p>
+      <section>
+        <h2>Need help?</h2>
+        <p>Email us and we'll get back to you: <a href="mailto:dor362@gmail.com">dor362@gmail.com</a></p>
+      </section>
+      <section>
+        <h2>Signing in</h2>
+        <p>Parents sign in with email + password (or Google / Apple). Parents are invited by their speech clinician via a link.</p>
+      </section>
+      <section>
+        <h2>Delete account</h2>
+        <p>In-app: avatar screen → "⚙ Parent Area" → solve the parental gate → "Delete account". This permanently deletes the account, all profiles, and all data, including recordings.</p>
+      </section>
+      <section>
+        <h2>Revoke recording consent</h2>
+        <p>In the same Parent Area; you can re-enable it anytime.</p>
+      </section>
+      <section>
+        <h2>Forgot password</h2>
+        <p>Tap "Forgot password?" on the sign-in screen to get a reset link by email.</p>
+      </section>
+      <section>
+        <h2>Privacy</h2>
+        <p>Privacy Policy: <a href="https://dorhason.github.io/dibur-legal/privacy.html">https://dorhason.github.io/dibur-legal/privacy.html</a></p>
+      </section>
+    </article>
+  </main>
+  <footer>
+    <p><a href="mailto:dor362@gmail.com">dor362@gmail.com</a></p>
+  </footer>
+  <script>
+    (function () {
+      var btn = document.getElementById('lang');
+      function apply(lang) {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('.doc').forEach(function (d) {
+          d.hidden = d.getAttribute('data-lang') !== lang;
+        });
+        document.querySelectorAll('[data-t]').forEach(function (e) {
+          e.hidden = e.getAttribute('data-t') !== lang;
+        });
+        btn.textContent = lang === 'he' ? 'English' : 'עברית';
+        try { localStorage.setItem('dibur-legal-lang', lang); } catch (e) {}
+      }
+      var saved;
+      try { saved = localStorage.getItem('dibur-legal-lang'); } catch (e) {}
+      var initial = saved || ((navigator.language || 'he').slice(0, 2) === 'he' ? 'he' : 'en');
+      apply(initial);
+      btn.addEventListener('click', function () {
+        apply(document.documentElement.lang === 'he' ? 'en' : 'he');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,23 +1,27 @@
-// Generates the static legal site (privacy.html, terms.html, index.html)
-// from the app's source-of-truth legal content. Run with:
+// Generates the static legal site (privacy.html, terms.html, support.html,
+// index.html) from the app's source-of-truth legal content. Run with:
 //   npx tsx generate.mjs
 //
-// It imports the real legalContent.ts from the (private) dibur app repo,
-// so the published pages never drift from the in-app version. The on-page
-// "DRAFT" banner is intentionally omitted here (public App Store URL).
+// Privacy + Terms text is imported from the real legalContent.ts in the
+// (private) dibur app repo, so the published pages never drift from the in-app
+// version. Override the source path with LEGAL_SRC=/path/to/legalContent.ts
+// (used when building from a git worktree). The Support page content lives
+// here (it has no in-app equivalent). The in-app "DRAFT" banner is omitted.
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const SRC = resolve(
-  here,
-  '../dibur/packages/client/src/components/legal/legalContent.ts',
-);
+const SRC =
+  process.env.LEGAL_SRC ||
+  resolve(here, '../dibur/packages/client/src/components/legal/legalContent.ts');
 
 const { privacyHe, privacyEn, termsHe, termsEn, LEGAL_VERSION } = await import(
   SRC
 );
+
+const PRIVACY_URL = 'https://dorhason.github.io/dibur-legal/privacy.html';
+const SUPPORT_EMAIL = 'dor362@gmail.com';
 
 const esc = (s) =>
   String(s)
@@ -25,25 +29,131 @@ const esc = (s) =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
+// Make bare URLs and email addresses clickable (after escaping).
+const linkify = (s) =>
+  esc(s)
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>')
+    .replace(
+      /(^|[\s(])([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g,
+      '$1<a href="mailto:$2">$2</a>',
+    );
+
+// ── Support page content (bilingual; no in-app source) ──────────
+const supportHe = {
+  title: 'תמיכה',
+  lastUpdatedLabel: 'עודכן לאחרונה',
+  intro:
+    'דיבור היא אפליקציה לתרגול דיבור בעברית לילדים, בשימוש הורי ובליווי קלינאי/ת תקשורת.',
+  back: '→ חזרה',
+  sections: [
+    {
+      heading: 'צריכים עזרה?',
+      paragraphs: [`שלחו לנו מייל ונחזור אליכם: ${SUPPORT_EMAIL}`],
+    },
+    {
+      heading: 'איך מתחברים?',
+      paragraphs: [
+        'ההורה נרשם עם אימייל וסיסמה (או דרך Google / Apple). קלינאי/ת התקשורת שולח/ת קישור הזמנה להורה, ובו ההורה בוחר/ת סיסמה ומאשר/ת את ההסכמות.',
+      ],
+    },
+    {
+      heading: 'איך מוחקים את החשבון?',
+      paragraphs: [
+        'בתוך האפליקציה: מסך הדמות → "⚙ אזור הורים" → פתרון תרגיל (שער הורים) → "מחיקת חשבון". הפעולה מוחקת לצמיתות את החשבון, הפרופילים וכל הנתונים, כולל הקלטות.',
+      ],
+    },
+    {
+      heading: 'איך מבטלים הסכמה להקלטה?',
+      paragraphs: ['באותו "אזור הורים" → "ביטול הסכמה להקלטה". אפשר לחדש בכל עת.'],
+    },
+    {
+      heading: 'שכחתי סיסמה',
+      paragraphs: [
+        'במסך הכניסה לוחצים "שכחתם סיסמה?" ומקבלים קישור לאיפוס במייל.',
+      ],
+    },
+    {
+      heading: 'פרטיות',
+      paragraphs: [`מדיניות הפרטיות: ${PRIVACY_URL}`],
+    },
+  ],
+};
+
+const supportEn = {
+  title: 'Support',
+  lastUpdatedLabel: 'Last updated',
+  intro:
+    'Dibur is a Hebrew speech-practice app for children, used by parents alongside a speech-language clinician.',
+  back: '← Back',
+  sections: [
+    {
+      heading: 'Need help?',
+      paragraphs: [`Email us and we'll get back to you: ${SUPPORT_EMAIL}`],
+    },
+    {
+      heading: 'Signing in',
+      paragraphs: [
+        'Parents sign in with email + password (or Google / Apple). Parents are invited by their speech clinician via a link.',
+      ],
+    },
+    {
+      heading: 'Delete account',
+      paragraphs: [
+        'In-app: avatar screen → "⚙ Parent Area" → solve the parental gate → "Delete account". This permanently deletes the account, all profiles, and all data, including recordings.',
+      ],
+    },
+    {
+      heading: 'Revoke recording consent',
+      paragraphs: ['In the same Parent Area; you can re-enable it anytime.'],
+    },
+    {
+      heading: 'Forgot password',
+      paragraphs: [
+        'Tap "Forgot password?" on the sign-in screen to get a reset link by email.',
+      ],
+    },
+    {
+      heading: 'Privacy',
+      paragraphs: [`Privacy Policy: ${PRIVACY_URL}`],
+    },
+  ],
+};
+
 function renderDoc(doc, lang) {
   const dir = lang === 'he' ? 'rtl' : 'ltr';
   const sections = doc.sections
     .map(
       (s) =>
         `      <section>\n        <h2>${esc(s.heading)}</h2>\n` +
-        s.paragraphs.map((p) => `        <p>${esc(p)}</p>`).join('\n') +
+        s.paragraphs.map((p) => `        <p>${linkify(p)}</p>`).join('\n') +
         `\n      </section>`,
     )
     .join('\n');
   return `    <article class="doc" data-lang="${lang}" dir="${dir}" lang="${lang}">
       <h1>${esc(doc.title)}</h1>
       <p class="updated">${esc(doc.lastUpdatedLabel)}: ${esc(LEGAL_VERSION)}</p>
-      <p class="intro">${esc(doc.intro)}</p>
+      <p class="intro">${linkify(doc.intro)}</p>
 ${sections}
     </article>`;
 }
 
-function page(slug, otherSlug, otherLabelHe, otherLabelEn, he, en) {
+const DOCS = {
+  privacy: { he: 'מדיניות פרטיות', en: 'Privacy Policy' },
+  terms: { he: 'תנאי שימוש', en: 'Terms of Service' },
+  support: { he: 'תמיכה', en: 'Support' },
+};
+
+function nav(currentSlug) {
+  return Object.entries(DOCS)
+    .filter(([slug]) => slug !== currentSlug)
+    .map(
+      ([slug, label]) =>
+        `      <a class="navlink" href="${slug}.html"><span data-t="he">${esc(label.he)}</span><span data-t="en" hidden>${esc(label.en)}</span></a>`,
+    )
+    .join('\n');
+}
+
+function page(slug, he, en) {
   return `<!doctype html>
 <html lang="he">
 <head>
@@ -57,7 +167,7 @@ function page(slug, otherSlug, otherLabelHe, otherLabelEn, he, en) {
   <header class="bar">
     <a class="brand" href="index.html">Dibur · דיבור</a>
     <div class="controls">
-      <a class="navlink" href="${otherSlug}.html"><span data-t="he">${esc(otherLabelHe)}</span><span data-t="en" hidden>${esc(otherLabelEn)}</span></a>
+${nav(slug)}
       <button id="lang" class="toggle" type="button">English</button>
     </div>
   </header>
@@ -66,7 +176,7 @@ ${renderDoc(he, 'he')}
 ${renderDoc(en, 'en')}
   </main>
   <footer>
-    <p>privacy@causequest.app</p>
+    <p><a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
   </footer>
   <script>
     (function () {
@@ -101,30 +211,26 @@ const index = `<!doctype html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dibur · דיבור — Legal</title>
+  <title>Dibur · דיבור — Legal &amp; Support</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="bar"><span class="brand">Dibur · דיבור</span></header>
   <main class="index">
-    <h1>Legal</h1>
+    <h1>Legal &amp; Support</h1>
     <ul class="links">
       <li><a href="privacy.html">Privacy Policy · מדיניות פרטיות</a></li>
       <li><a href="terms.html">Terms of Service · תנאי שימוש</a></li>
+      <li><a href="support.html">Support · תמיכה</a></li>
     </ul>
   </main>
-  <footer><p>privacy@causequest.app</p></footer>
+  <footer><p><a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p></footer>
 </body>
 </html>
 `;
 
-writeFileSync(
-  resolve(here, 'privacy.html'),
-  page('privacy', 'terms', 'תנאי שימוש', 'Terms of Service', privacyHe, privacyEn),
-);
-writeFileSync(
-  resolve(here, 'terms.html'),
-  page('terms', 'privacy', 'מדיניות פרטיות', 'Privacy Policy', termsHe, termsEn),
-);
+writeFileSync(resolve(here, 'privacy.html'), page('privacy', privacyHe, privacyEn));
+writeFileSync(resolve(here, 'terms.html'), page('terms', termsHe, termsEn));
+writeFileSync(resolve(here, 'support.html'), page('support', supportHe, supportEn));
 writeFileSync(resolve(here, 'index.html'), index);
-console.log('Generated index.html, privacy.html, terms.html from', SRC);
+console.log('Generated index/privacy/terms/support.html from', SRC);

@@ -6,8 +6,9 @@ used for App Store / Play Store submissions.
 
 - **Privacy Policy:** [`/privacy.html`](privacy.html)
 - **Terms of Service:** [`/terms.html`](terms.html)
+- **Support:** [`/support.html`](support.html)
 
-Both pages are bilingual (Hebrew + English) with an in-page language toggle.
+All pages are bilingual (Hebrew + English) with an in-page language toggle.
 
 ## Source of truth
 
