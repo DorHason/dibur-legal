@@ -138,18 +138,19 @@ ${sections}
 }
 
 const DOCS = {
-  privacy: { he: 'מדיניות פרטיות', en: 'Privacy Policy' },
   terms: { he: 'תנאי שימוש', en: 'Terms of Service' },
+  privacy: { he: 'מדיניות פרטיות', en: 'Privacy Policy' },
   support: { he: 'תמיכה', en: 'Support' },
 };
 
 function nav(currentSlug) {
   return Object.entries(DOCS)
-    .filter(([slug]) => slug !== currentSlug)
-    .map(
-      ([slug, label]) =>
-        `      <a class="navlink" href="${slug}.html"><span data-t="he">${esc(label.he)}</span><span data-t="en" hidden>${esc(label.en)}</span></a>`,
-    )
+    .map(([slug, label]) => {
+      const current = slug === currentSlug;
+      const cls = current ? 'navlink active' : 'navlink';
+      const aria = current ? ' aria-current="page"' : '';
+      return `      <a class="${cls}" href="${slug}.html"${aria}><span data-t="he">${esc(label.he)}</span><span data-t="en" hidden>${esc(label.en)}</span></a>`;
+    })
     .join('\n');
 }
 
@@ -194,7 +195,7 @@ ${renderDoc(en, 'en')}
       }
       var saved;
       try { saved = localStorage.getItem('dibur-legal-lang'); } catch (e) {}
-      var initial = saved || ((navigator.language || 'he').slice(0, 2) === 'he' ? 'he' : 'en');
+      var initial = saved || 'he';
       apply(initial);
       btn.addEventListener('click', function () {
         apply(document.documentElement.lang === 'he' ? 'en' : 'he');
@@ -219,8 +220,8 @@ const index = `<!doctype html>
   <main class="index">
     <h1>Legal &amp; Support</h1>
     <ul class="links">
-      <li><a href="privacy.html">Privacy Policy · מדיניות פרטיות</a></li>
       <li><a href="terms.html">Terms of Service · תנאי שימוש</a></li>
+      <li><a href="privacy.html">Privacy Policy · מדיניות פרטיות</a></li>
       <li><a href="support.html">Support · תמיכה</a></li>
     </ul>
   </main>

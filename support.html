@@ -11,15 +11,16 @@
   <header class="bar">
     <a class="brand" href="index.html">Dibur · דיבור</a>
     <div class="controls">
-      <a class="navlink" href="privacy.html"><span data-t="he">מדיניות פרטיות</span><span data-t="en" hidden>Privacy Policy</span></a>
       <a class="navlink" href="terms.html"><span data-t="he">תנאי שימוש</span><span data-t="en" hidden>Terms of Service</span></a>
+      <a class="navlink" href="privacy.html"><span data-t="he">מדיניות פרטיות</span><span data-t="en" hidden>Privacy Policy</span></a>
+      <a class="navlink active" href="support.html" aria-current="page"><span data-t="he">תמיכה</span><span data-t="en" hidden>Support</span></a>
       <button id="lang" class="toggle" type="button">English</button>
     </div>
   </header>
   <main>
     <article class="doc" data-lang="he" dir="rtl" lang="he">
       <h1>תמיכה</h1>
-      <p class="updated">עודכן לאחרונה: 2026-05-13</p>
+      <p class="updated">עודכן לאחרונה: 2026-06-29</p>
       <p class="intro">דיבור היא אפליקציה לתרגול דיבור בעברית לילדים, בשימוש הורי ובליווי קלינאי/ת תקשורת.</p>
       <section>
         <h2>צריכים עזרה?</h2>
@@ -48,7 +49,7 @@
     </article>
     <article class="doc" data-lang="en" dir="ltr" lang="en">
       <h1>Support</h1>
-      <p class="updated">Last updated: 2026-05-13</p>
+      <p class="updated">Last updated: 2026-06-29</p>
       <p class="intro">Dibur is a Hebrew speech-practice app for children, used by parents alongside a speech-language clinician.</p>
       <section>
         <h2>Need help?</h2>
@@ -95,7 +96,7 @@
       }
       var saved;
       try { saved = localStorage.getItem('dibur-legal-lang'); } catch (e) {}
-      var initial = saved || ((navigator.language || 'he').slice(0, 2) === 'he' ? 'he' : 'en');
+      var initial = saved || 'he';
       apply(initial);
       btn.addEventListener('click', function () {
         apply(document.documentElement.lang === 'he' ? 'en' : 'he');

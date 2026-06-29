@@ -32,6 +32,14 @@ body {
 .controls { display: flex; align-items: center; gap: 14px; }
 .navlink { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
 .navlink:hover { text-decoration: underline; }
+.navlink.active {
+  color: var(--ink);
+  font-weight: 700;
+  cursor: default;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+}
+.navlink.active:hover { text-decoration: none; }
 .toggle {
   border: 1px solid var(--line);
   background: var(--bg);
